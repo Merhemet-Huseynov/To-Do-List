@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Todo List</h1>
+    
+    <!-- Create a Task -->
+    <form action="{% url 'app:create_new_task' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="task_title" placeholder="New task" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- Show available tasks-->
+    <ul>
+        {% for task in task_list %}
+            <li>
+                <p>{{ forloop.counter }}. {{ task.title }} - {{ task.show_due_date }}</p>
+                <div>
+                    
+                    <form action="{% url 'app:toggle_task_status' task.id %}" method="POST">
+                        {% if task.is_completed %}
+                        <img src="{% static 'icons/checkmark.png' %}" alt="" width="24px" height="24px">
+                        {% endif %}
+
+                        {% csrf_token %}
+                        <button type="submit">
+                        {% if task.is_completed %}
+                        Uncomplete
+                        {% else %}
+                        Complete
+                        {% endif %}
+                        </button>
+                    </form>
+
+                    <form action="{% url 'app:delete_task' task.pk %}" method="POST">
+                        {% csrf_token %}
+                        <img src="{% static 'icons/delete.png' %}" alt="" width="24px" height="24px">
+                        <button type="submit">Delete</button>
+                    </form>
+
+                    <form action="{% url 'app:pinned_task' task.id %}" method="POST">
+                        {% if task.is_pinned %}
+                        <img src="{% static 'icons/pin.png' %}" alt="" width="24px" height="24px">
+                        {% endif %}
+
+                        {% csrf_token %}
+                        <button type="submit">
+                        {% if task.is_pinned %}
+                        Unpinned
+                        {% else %}
+                        Pinned
+                        {% endif %}
+                        </button>
+                    </form>
+
+                </div>
+            </li>
+        {% empty %}
+            <li>No tasks to display.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
