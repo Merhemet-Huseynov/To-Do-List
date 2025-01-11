@@ -79,16 +79,22 @@
                         {% if task.is_pinned %}
                         <img src="{% static 'icons/pin.png' %}" alt="" width="24px" height="24px">
                         {% endif %}
-
+                        
                         {% csrf_token %}
                         <button type="submit">
-                        {% if task.is_pinned %}
-                        Unpinned
-                        {% else %}
-                        Pinned
-                        {% endif %}
+                            {% if messages %}
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                            {% endif %}
+                            {% if task.is_pinned %}
+                            Unpinned
+                            {% else %}
+                            Pinned
+                            {% endif %}
                         </button>
                     </form>
+
 
                 </div>
             </li>

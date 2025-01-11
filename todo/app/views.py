@@ -41,3 +41,22 @@ def pinned_task(request, pk):
     task.save()
     return redirect(reverse("app:index"))
 
+
+from django.contrib import messages
+
+def pinned_task(request, pk):
+    user = request.user
+    todo_list = ToDoList.objects.get(user=user)
+    pinned_tasks_count = Task.objects.filter(todo_list=todo_list, is_pinned=True).count()
+
+    task = get_object_or_404(Task, pk=pk)
+
+    if not task.is_pinned and pinned_tasks_count >= 3:
+        messages.error(request, "Maksimum 3 pin edilmiş task ola bilər.")
+        return redirect(reverse("app:index"))
+
+    task.is_pinned = not task.is_pinned
+    task.save()
+    return redirect(reverse("app:index"))
+
+
